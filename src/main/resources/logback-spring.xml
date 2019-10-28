@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />    
+
+      
+    <!-- Loggers -->
+    <logger name="org.springframework.core">
+        <level value="info" />
+    </logger>
+    <logger name="org.springframework.beans">
+        <level value="info" />
+    </logger>
+    <logger name="org.springframework.context">
+        <level value="info" />
+    </logger>
+    <logger name="org.springframework.web">
+        <level value="info" />
+    </logger>
+    <logger name="com.example.web">
+        <level value="debug" />
+    </logger>
+    <logger name="java.sql">
+        <level value="debug" />
+    </logger>
+   	<logger name="org.mybatis" level="ALL"  additivity="false">
+    	<appender-ref ref="CONSOLE" />
+	</logger>
+      
+    <root level="INFO">			
+		  <springProfile name="dev">
+		    <appender-ref ref="CONSOLE"/>
+		  </springProfile>
+		
+		  <springProfile name="local">
+		  	<appender-ref ref="CONSOLE"/>
+		  </springProfile>
+		  
+		  <springProfile name="prod">
+		  	<appender-ref ref="CONSOLE"/>
+		  </springProfile>
+    </root>
+    
+</configuration>
