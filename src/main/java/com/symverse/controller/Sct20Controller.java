@@ -1,38 +1,125 @@
 package com.symverse.controller;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.symverse.core.config.jasypt.JasyptUtil;
+import com.symverse.sct20.common.util.SymGetAPI;
 import com.symverse.sct20.transaction.service.Sct20Factory;
+
+
 
 
 @RestController
 @RequestMapping("/sct20")
 public class Sct20Controller {
+	
+	
+	// -DSERVICE_MODE=testnet 
+	// -DKEYSTORE_PASSWORD=Hf/7/UqxJD0UFg70IAoS5stN+fPyI4Rv4jRH8EbzKJchdsRxkG9WW1IGYgLXHziX 
+	// -DKEYSTORE_FILENAME=testnet-keystore.json 
+	// -DCHAIN_ID=2 
+	// -DNODE_URL=http://1.234.16.211:8545
+	
+	
+	
 
+	private static final String SERVICE_MODE = Optional.ofNullable(System.getProperty("SERVICE_MODE")).orElse("main").toLowerCase();
+	private static final String KEYSTORE_PASSWORD = Optional.ofNullable(System.getProperty("KEYSTORE_PASSWORD")).orElse("0000").toLowerCase();
+	private static final String KEYSTORE_FILENAME = Optional.ofNullable(System.getProperty("KEYSTORE_FILENAME")).orElse("keystore.json").toLowerCase();
+	
 	
 	@Value("${ca.node.url}")	private String engineNodeRequsetUrl;
 	
-	@Autowired
-	private Sct20Factory sct40Factory;
+	@Autowired private Sct20Factory sct20Factory;
+
+    @RequestMapping("/hello")
+    public @ResponseBody String hello() {
+        return "Hello, Spring Boot";
+    }
+
+	
+	@RequestMapping(value="/passswordEnc", method=RequestMethod.POST)
+	@ResponseBody
+	public Object passswordEnc(@RequestBody String password ) throws Exception {
+		System.out.println("parameter password : "+password);
+		String encStr = JasyptUtil.stringEncryptor(password);
+		System.out.println("passwordEnc : "+encStr);  // IpjPTWz8BCm6VUQmjOyrQ58LyCPJ/A150fds0Gcl4fY=
+		return encStr;
+	}
+	
+	@RequestMapping(value="/passswordDec", method=RequestMethod.POST)
+	@ResponseBody
+	public Object passswordDec(@RequestBody String password ) throws Exception {
+		System.out.println("parameter password : "+password);
+		String decStr = JasyptUtil.stringDecryptor(password);
+		System.out.println("passwordEnc : "+decStr);
+		return decStr;
+	}
 	
 	
+	@RequestMapping(value="/getBalance", method=RequestMethod.GET, consumes = { "application/json" }, produces = "application/json" )
+	@ResponseBody
+	public Object getBalance(  ) throws Exception {
+		// Sct20SendRawTransactionServiceTest.class - sct20_MethodCode_0  참조해서 구현
+		// ## main net 
+		// ca.id=0002
+		// ca.keystore.passwored=ENC(R3m9tR8VULnT8yw7FrKVTY8o0zUfRkyyrZuhng87jlS6/i417KRHGg==)
+		// ca.node.url=http://58.227.193.177:8545
+		List<String> requestParam = new ArrayList<String>();
+		requestParam.add("0x00028530e81e13060002");
+		requestParam.add("latest");
+		String getBalance =SymGetAPI.getSymAPIConnection("GET", "http://58.227.193.177:8545" ,"sym_getBalance", requestParam ,"");
+		// getBalance는 0을 뒤에 18개 붙이므로 정수로 표현할때는 1000000000000000000으로 나눠 준다 .난 소수점 2째자리까지 표현하고싶으므로~~~ 0 2개 뺌! 
+		BigDecimal  amountValue  =  new BigDecimal(  getBalance ).divide(new BigDecimal(  "1000000000000000000" )) ;
+		DecimalFormat dfFormat = new DecimalFormat("#.####");
+		String str =  dfFormat.format( amountValue.floatValue() );
+		
+		//	System.out.println(amountValue);
+		//	System.out.println(getBalance);
+		//	System.out.println(str);
+		return str;
+	}
 	
+	// 토큰 보내기 메소드
+	@RequestMapping(value="/sendRawTransaction", method=RequestMethod.GET, consumes = { "application/json" }, produces = "application/json" )
+	@ResponseBody
+	public Object sendRawTransaction( String amountValue ) throws Exception {
+		// String address = GetKeyStoreJson.getKeyStoreValue("address");
+		String jaehyunAddress = "0x00028530e81e13060002";
+		System.out.println(amountValue);
+		String resultHashValue = sct20Factory.sendRawTransaction(KEYSTORE_FILENAME, jaehyunAddress, amountValue);
+		return resultHashValue;
+	}
+	
+	
+	// sct 20 토큰 계약 생성
 	@RequestMapping(value="/method0", method=RequestMethod.GET, consumes = { "application/json" }, produces = "application/json" )
 	@ResponseBody
 	public Object method0(  ) throws Exception {
-		// Sct20SendRawTransactionServiceTest.class - sct20_MethodCode_0  참조해서 구현
+		
+		// sct20Factory.sct20TokenCreate(keyStoreFileName, coinName, coinSimpleName, coinTotalSupply);
 		return "method0";
 	}
 	
+	
+	// sct 20 토큰 전송
 	@RequestMapping(value="/method1", method=RequestMethod.GET, consumes = { "application/json" }, produces = "application/json" )
 	@ResponseBody
 	public Object method1(  ) throws Exception {
 		// Sct20SendRawTransactionServiceTest.class - sct20_MethodCode_1  참조해서 구현
+		// sct20Factory.sct20ToeknSend(keyStoreFileName, contractAddress, toSymId, sendTokenAmt);
 		return "method1";
 	}
 	

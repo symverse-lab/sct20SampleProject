@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,12 +21,12 @@ import org.web3j.protocol.http.HttpService;
 import org.web3j.utils.Numeric;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.symverse.common.KeyStoreManagement;
 import com.symverse.common.SymGetAPITest;
 import com.symverse.exception.ServerErrorException;
 import com.symverse.gsym.core.Gsym;
 import com.symverse.gsym.core.JsonRpc2_0Gsym;
 import com.symverse.gsym.domain.SendSCT20;
+import com.symverse.sct20.common.util.KeyStoreManagement;
 import com.symverse.sct20tokensend.transaction.domain.Sct20SendRawTransactionTest;
 import com.symverse.sct20tokensend.transaction.domain.Sct20TempleteVOTest;
 

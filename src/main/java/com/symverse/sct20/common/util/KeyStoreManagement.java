@@ -2,6 +2,7 @@ package com.symverse.sct20.common.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
@@ -19,16 +20,12 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class KeyStoreManagement {
 
-	@Value("${ca.keystore.passwored}")
-	private String keyStorePassword;
 	
-	@Value("${spring.profiles.active}")
-	private String serverEnv;
-	
+	private static final String KEYSTORE_PASSWORD = Optional.ofNullable(System.getProperty("KEYSTORE_PASSWORD")).orElse("0000").toLowerCase();
+	private static final String KEYSTORE_FILENAME = Optional.ofNullable(System.getProperty("KEYSTORE_FILENAME")).orElse("keystore.json").toLowerCase();
 
 	private Credentials credentials;
 
-	
 	
 	@PostConstruct
 	public void loadCredentials() throws Exception {
@@ -37,16 +34,8 @@ public class KeyStoreManagement {
 
 		try {
 			log.debug("[ca_log]load credential");
-			String getPropertyFileName = "";
-			if("prod".equals(serverEnv)) {
-				getPropertyFileName = "keystore.json";
-			}else if("local".equals(serverEnv)) {
-				getPropertyFileName = "_devNet.json";
-			}else if("dev".equals(serverEnv)) {
-				getPropertyFileName = "_devNet.json";
-			}
-			File keyStoreFile = new ClassPathResource("keystore/"+getPropertyFileName).getFile();
-			credentials = WalletUtils.loadCredentials(keyStorePassword, keyStoreFile);
+			File keyStoreFile = new ClassPathResource("keystore/"+KEYSTORE_FILENAME).getFile();
+			credentials = WalletUtils.loadCredentials(KEYSTORE_PASSWORD, keyStoreFile);
 
 		} catch (IOException e) {
 			throw new Exception(e.getMessage());

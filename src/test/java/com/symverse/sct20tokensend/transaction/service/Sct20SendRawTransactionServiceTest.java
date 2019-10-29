@@ -1,6 +1,5 @@
 package com.symverse.sct20tokensend.transaction.service;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,20 +15,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.web3j.protocol.http.HttpService;
-import org.web3j.rlp.RlpEncoder;
 import org.web3j.utils.Numeric;
 
 import com.symverse.common.GetKeyStoreJsonTest;
-import com.symverse.common.KeyStoreManagement;
 import com.symverse.common.SymGetAPITest;
 import com.symverse.exception.ServerErrorException;
 import com.symverse.gsym.core.Gsym;
 import com.symverse.gsym.core.JsonRpc2_0Gsym;
 import com.symverse.gsym.domain.SendSCT20;
+import com.symverse.sct20.common.util.KeyStoreManagement;
 import com.symverse.sct20tokensend.transaction.domain.Sct20SendRawTransactionTest;
 import com.symverse.sct20tokensend.transaction.domain.Sct20TempleteVOTest;
+
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.parser.ParseException;
 
 
 @Slf4j

@@ -4,6 +4,7 @@ package com.symverse.sct20.common.util;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
@@ -13,9 +14,9 @@ import java.util.Map;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.web3j.utils.Numeric;
 
 import com.google.gson.Gson;
+import com.symverse.common.model.CommUtil;
 
 import net.minidev.json.JSONArray;
 
@@ -93,8 +94,12 @@ public class SymGetAPI {
 			    		String getValue = (String) obj.get(resultKey);
 			    		resultValue = getValue;
 			    	}else {
-			    		long v = Long.parseLong(Numeric.cleanHexPrefix( result ), 16);
-			    		resultValue = String.valueOf(v);
+			    		System.out.println("result : "+ CommUtil.preHexRemove ( result ));
+			    		
+			    	    BigInteger bigInt = new BigInteger( CommUtil.preHexRemove ( result ), 16);
+			    	    
+			    	    // 0x39f9049492a9babaa
+			    		resultValue = String.valueOf(bigInt);
 			    	}
 			    	
 			    	
