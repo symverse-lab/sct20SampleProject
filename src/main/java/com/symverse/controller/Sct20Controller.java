@@ -4,10 +4,8 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,14 +13,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.symverse.core.config.jasypt.JasyptUtil;
+import com.symverse.core.config.systemenv.SystemEnvFactory;
+import com.symverse.sct20.common.util.GetKeyStoreJson;
 import com.symverse.sct20.common.util.SymGetAPI;
 import com.symverse.sct20.transaction.service.Sct20Factory;
+
+import lombok.extern.slf4j.Slf4j;
 
 
 
 
 @RestController
 @RequestMapping("/sct20")
+@Slf4j
 public class Sct20Controller {
 	
 	
@@ -33,14 +36,12 @@ public class Sct20Controller {
 	// -DNODE_URL=http://1.234.16.211:8545
 	
 	
-	
+	@Autowired SystemEnvFactory systemEvn;  // System.getProperty를 가져옵니다.
+	@Autowired GetKeyStoreJson getKeyStoreJson;  // keystore의 객체를 가져 옵니다.
+	@Autowired private Sct20Factory sct20Factory; 
 
-	private static final String SERVICE_MODE = Optional.ofNullable(System.getProperty("SERVICE_MODE")).orElse("main").toLowerCase();
-	private static final String KEYSTORE_PASSWORD = Optional.ofNullable(System.getProperty("KEYSTORE_PASSWORD")).orElse("0000").toLowerCase();
-	private static final String KEYSTORE_FILENAME = Optional.ofNullable(System.getProperty("KEYSTORE_FILENAME")).orElse("keystore.json").toLowerCase();
 	
-	@Autowired private Sct20Factory sct20Factory;
-
+	
 	
 	@RequestMapping(value="/passswordEnc", method=RequestMethod.POST)
 	@ResponseBody
@@ -69,10 +70,13 @@ public class Sct20Controller {
 		// ca.id=0002
 		// ca.keystore.passwored=ENC(R3m9tR8VULnT8yw7FrKVTY8o0zUfRkyyrZuhng87jlS6/i417KRHGg==)
 		// ca.node.url=http://58.227.193.177:8545
+		System.out.println("chainId : "+systemEvn.CHAIN_ID);
+		
+		
 		List<String> requestParam = new ArrayList<String>();
 		requestParam.add("0x00028530e81e13060002");
 		requestParam.add("latest");
-		String getBalance =SymGetAPI.getSymAPIConnection("GET", "http://58.227.193.177:8545" ,"sym_getBalance", requestParam ,"");
+		String getBalance =SymGetAPI.getSymAPIConnection("GET", systemEvn.NODE_URL ,"sym_getBalance", requestParam ,"");
 		// getBalance는 0을 뒤에 18개 붙이므로 정수로 표현할때는 1000000000000000000으로 나눠 준다 .난 소수점 2째자리까지 표현하고싶으므로~~~ 0 2개 뺌! 
 		BigDecimal  amountValue  =  new BigDecimal(  getBalance ).divide(new BigDecimal(  "1000000000000000000" )) ;
 		DecimalFormat dfFormat = new DecimalFormat("#.####");
@@ -91,7 +95,7 @@ public class Sct20Controller {
 		// String address = GetKeyStoreJson.getKeyStoreValue("address");
 		String jaehyunAddress = "0x00028530e81e13060002";
 		System.out.println(amountValue);
-		String resultHashValue = sct20Factory.sendRawTransaction(KEYSTORE_FILENAME, jaehyunAddress, amountValue);
+		String resultHashValue = sct20Factory.sendRawTransaction(systemEvn.KEYSTORE_FILENAME, jaehyunAddress, amountValue);
 		return resultHashValue;
 	}
 	

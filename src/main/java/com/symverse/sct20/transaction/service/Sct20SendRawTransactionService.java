@@ -7,11 +7,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.ldap.embedded.EmbeddedLdapProperties.Credential;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import org.web3j.crypto.Credentials;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.utils.Numeric;
 
+import com.symverse.core.config.systemenv.SystemEnvFactory;
 import com.symverse.exception.ServerErrorException;
 import com.symverse.sct20.common.util.KeyStoreManagement;
 import com.symverse.sct20.gsym.core.Gsym;
@@ -33,21 +36,19 @@ public class Sct20SendRawTransactionService {
 		ca.chain.id=3 -> 체인아이디
 	*/
 	
-	private static final String CHAIN_ID = Optional.ofNullable(System.getProperty("CHAIN_ID")).orElse("1").toLowerCase();
-	private static final String NODE_URL = Optional.ofNullable(System.getProperty("NODE_URL")).orElse("http://1.234.16.211:8545").toLowerCase();
 	
-	@Value("${spring.profiles.active}")
-	private String serverEnv;
 	
 	
     private JsonRpc2_0Gsym jsonRpc2_0Gsym;
     
 	@Autowired
 	KeyStoreManagement keyStoreManagement;
+	
+	@Autowired SystemEnvFactory systemEvn;  // System.getProperty를 가져옵니다.
 
 	@Autowired
     public void initJsonRpc2_0Sym(Environment env){
-		this.jsonRpc2_0Gsym = Gsym.build(new HttpService(NODE_URL));
+		this.jsonRpc2_0Gsym = Gsym.build(new HttpService(systemEvn.NODE_URL));
     }
     
     /**
@@ -56,11 +57,18 @@ public class Sct20SendRawTransactionService {
 	 * @return
      * @throws Exception 
 	 */
-	public String sct20SendRawTransaction (Sct20SendRawTransaction sct20SendRawTransaction ) throws Exception {
+	public String sct20SendRawTransaction (Sct20SendRawTransaction sct20SendRawTransaction , Credentials credentialParam ) throws Exception {
 		log.debug("[coupon_log]sct20SendRawTransaction methodType ["+sct20SendRawTransaction.getInput().getSctType()+"]");
 		SendSct20 sendSct20 = new SendSct20();
 		//TODO sign값 value로 설정 넣어주기
-		byte[] signedMessage = Sct20RawTransactionEncoder.signMessage(sct20SendRawTransaction, (byte) Integer.parseInt(CHAIN_ID), keyStoreManagement.getCredentials() );
+
+		byte[] signedMessage = null ;
+		if("1.0.14".equals(systemEvn.ENGINE_VERSION)) {
+			signedMessage = Sct20RawTransactionEncoderEngineVersion1_0_11.signMessage(sct20SendRawTransaction, (byte) Integer.parseInt(systemEvn.CHAIN_ID), credentialParam  );
+		}
+		
+		
+		
 		String hexValue = Numeric.toHexString(signedMessage);
 		logger.debug("hexvalue: " + hexValue);
 		

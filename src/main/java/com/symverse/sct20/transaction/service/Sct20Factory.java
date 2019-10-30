@@ -10,12 +10,14 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import org.web3j.crypto.Credentials;
 import org.web3j.utils.Numeric;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.symverse.core.config.systemenv.SystemEnvFactory;
+import com.symverse.sct20.common.util.KeyStoreManagement;
 import com.symverse.sct20.common.util.SymGetAPI;
 import com.symverse.sct20.transaction.domain.Sct20SendRawTransaction;
 import com.symverse.sct20.transaction.domain.Sct20TempleteVO;
@@ -34,21 +36,21 @@ public class Sct20Factory {
 		ca.node.url=http://1.234.16.211:8545 -> 심버스 블록체인 jsonrpc 주소
 		ca.chain.id=3 -> 체인아이디
 	*/
-
 	
+	
+	// -DSERVICE_MODE=testnet 
+	// -DKEYSTORE_PASSWORD=Hf/7/UqxJD0UFg70IAoS5stN+fPyI4Rv4jRH8EbzKJchdsRxkG9WW1IGYgLXHziX 
+	// -DKEYSTORE_FILENAME=testnet-keystore.json 
+	// -DCHAIN_ID=2 
+	// -DsystemEnvFactory.NODE_URL=http://1.234.16.211:8545
+	
+	
+	@Autowired private SystemEnvFactory systemEnvFactory; 
+	@Autowired private KeyStoreManagement keyStoreManagement; 
 	@Autowired private Sct20SendRawTransactionService sct20SendRawTransactionService;
 	
-	@Value("${spring.profiles.active}")
-	private String serverEnv;
 	
 	
-	// chian id  설정
-	@Value("#{new Integer('${ca.chain.id}')}") // 3
-	private int chianId;
-	
-    @Value("${ca.node.url}")
-    private String nodeUrl; // Symverse BlockChain Engine DevNet httpUrl :
-    
     
 	private static String getKeyStoreValue(String KEYSTORE_FILENAME ,String getKeyStoreObjectName) throws  IOException {
 		JSONParser parser = new JSONParser();
@@ -68,16 +70,17 @@ public class Sct20Factory {
 	public String sendRawTransaction(String keyStoreFileName,String toAddress,String amount) throws Exception{
 		List<String> setSymAPIConnectionParam  = new ArrayList<String>();
 		String keyStroeAddress = Sct20Factory.getKeyStoreValue(keyStoreFileName,"address");
+		Credentials credential = keyStoreManagement.getCredentials(keyStoreFileName , systemEnvFactory.KEYSTORE_PASSWORD );
 		setSymAPIConnectionParam.add(keyStroeAddress);
 		setSymAPIConnectionParam.add("pending");
 		// 블록체인 엔인에서 현재의 블록 nonce값을 가져 옵니다.
-		String nonceValue =SymGetAPI.getSymAPIConnection("GET", nodeUrl ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
+		String nonceValue =SymGetAPI.getSymAPIConnection("GET", systemEnvFactory.NODE_URL ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
 		Sct20SendRawTransaction sct20SendRawTransaction	= new Sct20SendRawTransaction();
 		sct20SendRawTransaction.setFrom(keyStroeAddress);
 		sct20SendRawTransaction.setNonce(new BigInteger(nonceValue));
 		sct20SendRawTransaction.setGasPrice(new BigInteger("18000000000")); // 값 고정
 		sct20SendRawTransaction.setGasLimit(new BigInteger("2000000")); // 값 고정
-		sct20SendRawTransaction.setTo("0x00026159665b7e620002"); //old phone
+		sct20SendRawTransaction.setTo(toAddress); //old phone
 		sct20SendRawTransaction.setValue(new BigInteger(amount+"000000000000000000"));
 		Sct20TempleteVO inputParam = new Sct20TempleteVO();  // 그냥 sym 송금은 input값 없어도됨.
 		inputParam.setSctType("-1"); // 20 , 30 , 40
@@ -91,7 +94,7 @@ public class Sct20Factory {
 		List<String> workNodesValue = new ArrayList<>();
 		workNodesValue.add("0002b103ddaae9780002"); // mainnet worknode - 2  0x0002b103ddaae9780002		1.234.16.207	8545
 		sct20SendRawTransaction.setWorkNode(workNodesValue);
-		String getCouponTransactionHash = sct20SendRawTransactionService.sct20SendRawTransaction(sct20SendRawTransaction);
+		String getCouponTransactionHash = sct20SendRawTransactionService.sct20SendRawTransaction(sct20SendRawTransaction , credential);
 		return getCouponTransactionHash;
 	}
 	
@@ -101,10 +104,11 @@ public class Sct20Factory {
 		
 		 List<String> setSymAPIConnectionParam  = new ArrayList<String>();
 		 String keyStroeAddress = Sct20Factory.getKeyStoreValue( keyStoreFileName, "address");
+		Credentials credential = keyStoreManagement.getCredentials(keyStoreFileName , systemEnvFactory.KEYSTORE_PASSWORD );
 		 setSymAPIConnectionParam.add(keyStroeAddress);
 		 setSymAPIConnectionParam.add("pending");
 		 // 블록체인 엔인에서 현재의 블록 nonce값을 가져 옵니다.
-		 String nonceValue =SymGetAPI.getSymAPIConnection("GET", nodeUrl ,"sym_getTransactionCount",setSymAPIConnectionParam ,"");
+		 String nonceValue =SymGetAPI.getSymAPIConnection("GET", systemEnvFactory.NODE_URL ,"sym_getTransactionCount",setSymAPIConnectionParam ,"");
 		 
 		 Sct20SendRawTransaction sct20SendRawTransaction	= new Sct20SendRawTransaction();                                          
 		 sct20SendRawTransaction.setFrom(keyStroeAddress);                                                                          
@@ -128,7 +132,7 @@ public class Sct20Factory {
 		 List<String> workNodesValue = new ArrayList<>();                                                                           
 		 workNodesValue.add(keyStroeAddress);                                                                                       
 		 sct20SendRawTransaction.setWorkNode(workNodesValue);                                                                       
-		 String getCouponTransactionHash = sct20SendRawTransactionService.sct20SendRawTransaction(sct20SendRawTransaction);	    
+		 String getCouponTransactionHash = sct20SendRawTransactionService.sct20SendRawTransaction(sct20SendRawTransaction , credential);	    
 		 return getCouponTransactionHash;
 	}
 	
@@ -137,10 +141,11 @@ public class Sct20Factory {
 	public String sct20ToeknSend(String keyStoreFileName, String contractAddress , String toSymId , String sendTokenAmt) throws Exception {
 		List<String> setSymAPIConnectionParam  = new ArrayList<String>();
 		String keyStroeAddress = Sct20Factory.getKeyStoreValue( keyStoreFileName, "address");
+		Credentials credential = keyStoreManagement.getCredentials(keyStoreFileName , systemEnvFactory.KEYSTORE_PASSWORD );
 		setSymAPIConnectionParam.add(keyStroeAddress);
 		setSymAPIConnectionParam.add("pending");
 		// 블록체인 엔인에서 현재의 블록 nonce값을 가져 옵니다.
-		String nonceValue =SymGetAPI.getSymAPIConnection("GET", nodeUrl ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
+		String nonceValue =SymGetAPI.getSymAPIConnection("GET", systemEnvFactory.NODE_URL ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
 		Sct20SendRawTransaction sct20SendRawTransaction	= new Sct20SendRawTransaction();
 		sct20SendRawTransaction.setFrom(keyStroeAddress);
 		sct20SendRawTransaction.setNonce(new BigInteger(nonceValue));
@@ -160,19 +165,20 @@ public class Sct20Factory {
 		List<String> workNodesValue = new ArrayList<>();
 		workNodesValue.add(keyStroeAddress);
 		sct20SendRawTransaction.setWorkNode(workNodesValue);
-  	    String getCouponTransactionHash = sct20SendRawTransactionService.sct20SendRawTransaction(sct20SendRawTransaction);
+  	    String getCouponTransactionHash = sct20SendRawTransactionService.sct20SendRawTransaction(sct20SendRawTransaction , credential);
   	    return getCouponTransactionHash;
 	}
 
 	
 	// 제 3자 토큰 교환(송금) - ( 스펜더 계정에서 특정 SymId에게 송금하기 )  
-	public String sct20SpenderSendToken(String keyStoreFileNameString , String contractAddress ,String spenderSymid , String toSymId , String sendTokenAmt) throws Exception {
+	public String sct20SpenderSendToken(String keyStoreFileName , String contractAddress ,String spenderSymid , String toSymId , String sendTokenAmt) throws Exception {
 		 List<String> setSymAPIConnectionParam  = new ArrayList<String>();
-		 String keyStroeAddress = Sct20Factory.getKeyStoreValue( keyStoreFileNameString, "address");
+		 String keyStroeAddress = Sct20Factory.getKeyStoreValue( keyStoreFileName, "address");
+		 Credentials credential = keyStoreManagement.getCredentials(keyStoreFileName , systemEnvFactory.KEYSTORE_PASSWORD );
 		 setSymAPIConnectionParam.add(keyStroeAddress);
 		 setSymAPIConnectionParam.add("pending");
 		 // 블록체인 엔인에서 현재의 블록 nonce값을 가져 옵니다.
-		 String nonceValue =SymGetAPI.getSymAPIConnection("GET", nodeUrl ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
+		 String nonceValue =SymGetAPI.getSymAPIConnection("GET", systemEnvFactory.NODE_URL ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
 		 Sct20SendRawTransaction sct20SendRawTransaction	= new Sct20SendRawTransaction();
 		 sct20SendRawTransaction.setFrom(keyStroeAddress); // 제 3자 스펜더의 SYMID
 		 sct20SendRawTransaction.setNonce(new BigInteger(nonceValue));
@@ -193,7 +199,7 @@ public class Sct20Factory {
 		 List<String> workNodesValue = new ArrayList<>();
 		 workNodesValue.add("00022000000000270002");
 		 sct20SendRawTransaction.setWorkNode(workNodesValue);
-	     String getCouponTransactionHash = sct20SendRawTransactionService.sct20SendRawTransaction(sct20SendRawTransaction);	  
+	     String getCouponTransactionHash = sct20SendRawTransactionService.sct20SendRawTransaction(sct20SendRawTransaction , credential);	  
 	     return getCouponTransactionHash;
 	}
 
@@ -201,13 +207,14 @@ public class Sct20Factory {
 	
 
 	// 제 3자 토큰 승인 ( 스펜더 설정 )  - 제 3자 토큰 승인을 해야  제 3자 토큰 교환을 할 수 있습니다. 
-	public String sct20SpenderAssign(String keyStoreFileNameString , String contractAddress ,String spenderSymid  , String sendTokenAmt) throws Exception {
+	public String sct20SpenderAssign(String keyStoreFileName , String contractAddress ,String spenderSymid  , String sendTokenAmt) throws Exception {
 		List<String> setSymAPIConnectionParam  = new ArrayList<String>();
-		String keyStroeAddress = Sct20Factory.getKeyStoreValue( keyStoreFileNameString, "address");
+		String keyStroeAddress = Sct20Factory.getKeyStoreValue( keyStoreFileName, "address");
+		Credentials credential = keyStoreManagement.getCredentials(keyStoreFileName , systemEnvFactory.KEYSTORE_PASSWORD);
 		setSymAPIConnectionParam.add(keyStroeAddress);
 		setSymAPIConnectionParam.add("pending");
 		// 블록체인 엔진에서 현재의 블록 nonce값을 가져 옵니다.
-		String nonceValue =SymGetAPI.getSymAPIConnection("GET", nodeUrl ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
+		String nonceValue =SymGetAPI.getSymAPIConnection("GET", systemEnvFactory.NODE_URL ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
 		
 		Sct20SendRawTransaction sct20SendRawTransaction	= new Sct20SendRawTransaction();
 		sct20SendRawTransaction.setFrom(keyStroeAddress);
@@ -228,7 +235,7 @@ public class Sct20Factory {
 		List<String> workNodesValue = new ArrayList<>();
 		workNodesValue.add(keyStroeAddress);
 		sct20SendRawTransaction.setWorkNode(workNodesValue);
-	    String getCouponTransactionHash = sct20SendRawTransactionService.sct20SendRawTransaction(sct20SendRawTransaction);	   
+	    String getCouponTransactionHash = sct20SendRawTransactionService.sct20SendRawTransaction(sct20SendRawTransaction , credential);	   
 	    return getCouponTransactionHash;
 	}
 	
@@ -241,10 +248,11 @@ public class Sct20Factory {
 	public String sct20TokenTotalSupplyAdd(String keyStoreFileName , String contractAddress,String addTotalTokenSupplyAmt) throws Exception {
 		List<String> setSymAPIConnectionParam  = new ArrayList<String>();
 		String keyStroeAddress = Sct20Factory.getKeyStoreValue( keyStoreFileName, "address");
+		Credentials credential = keyStoreManagement.getCredentials(keyStoreFileName , systemEnvFactory.KEYSTORE_PASSWORD );
 		setSymAPIConnectionParam.add(keyStroeAddress);
 		setSymAPIConnectionParam.add("pending");
 		// 블록체인 엔인에서 현재의 블록 nonce값을 가져 옵니다.
-		String nonceValue =SymGetAPI.getSymAPIConnection("GET", nodeUrl ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
+		String nonceValue =SymGetAPI.getSymAPIConnection("GET", systemEnvFactory.NODE_URL ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
 		Sct20SendRawTransaction sct20SendRawTransaction	= new Sct20SendRawTransaction();
 		sct20SendRawTransaction.setFrom(keyStroeAddress);
 		sct20SendRawTransaction.setNonce(new BigInteger(nonceValue));
@@ -264,7 +272,7 @@ public class Sct20Factory {
 		List<String> workNodesValue = new ArrayList<>();
 		workNodesValue.add(keyStroeAddress);
 		sct20SendRawTransaction.setWorkNode(workNodesValue);
-	    String getCouponTransactionHash = sct20SendRawTransactionService.sct20SendRawTransaction(sct20SendRawTransaction);	   
+	    String getCouponTransactionHash = sct20SendRawTransactionService.sct20SendRawTransaction(sct20SendRawTransaction , credential);	   
 	    return getCouponTransactionHash;
 	}
 
@@ -275,10 +283,11 @@ public class Sct20Factory {
 	public String sct20TokenTotalSupplyBurn(String keyStoreFileName,String contractAddress ,String bornTotalTokenSupplyAmt) throws Exception {
 		List<String> setSymAPIConnectionParam  = new ArrayList<String>();
 		String keyStroeAddress = Sct20Factory.getKeyStoreValue(  keyStoreFileName, "address");
+		Credentials credential = keyStoreManagement.getCredentials(keyStoreFileName , systemEnvFactory.KEYSTORE_PASSWORD );
 		setSymAPIConnectionParam.add(keyStroeAddress);
 		setSymAPIConnectionParam.add("pending");
 		// 블록체인 엔인에서 현재의 블록 nonce값을 가져 옵니다.
-		String nonceValue =SymGetAPI.getSymAPIConnection("GET", nodeUrl ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
+		String nonceValue =SymGetAPI.getSymAPIConnection("GET", systemEnvFactory.NODE_URL ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
 		Sct20SendRawTransaction sct20SendRawTransaction	= new Sct20SendRawTransaction();
 		sct20SendRawTransaction.setFrom(keyStroeAddress);
 		sct20SendRawTransaction.setNonce(new BigInteger(nonceValue));
@@ -298,7 +307,7 @@ public class Sct20Factory {
 		List<String> workNodesValue = new ArrayList<>();
 		workNodesValue.add(keyStroeAddress);
 		sct20SendRawTransaction.setWorkNode(workNodesValue);
-	    String getCouponTransactionHash = sct20SendRawTransactionService.sct20SendRawTransaction(sct20SendRawTransaction);
+	    String getCouponTransactionHash = sct20SendRawTransactionService.sct20SendRawTransaction(sct20SendRawTransaction , credential);
 	    return getCouponTransactionHash;
 	}
 	
@@ -307,10 +316,11 @@ public class Sct20Factory {
 	public String sct20TokenTradingPause(String keyStoreFileName,String contractAddress) throws Exception {
 	    List<String> setSymAPIConnectionParam  = new ArrayList<String>();
 		String keyStroeAddress = Sct20Factory.getKeyStoreValue( keyStoreFileName, "address");
+		Credentials credential = keyStoreManagement.getCredentials(keyStoreFileName , systemEnvFactory.KEYSTORE_PASSWORD );
 		setSymAPIConnectionParam.add(keyStroeAddress);
 		setSymAPIConnectionParam.add("pending");
 		// 블록체인 엔인에서 현재의 블록 nonce값을 가져 옵니다.
-		String nonceValue =SymGetAPI.getSymAPIConnection("GET", nodeUrl ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
+		String nonceValue =SymGetAPI.getSymAPIConnection("GET", systemEnvFactory.NODE_URL ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
 		Sct20SendRawTransaction sct20SendRawTransaction	= new Sct20SendRawTransaction();
 		sct20SendRawTransaction.setFrom(keyStroeAddress);
 		sct20SendRawTransaction.setNonce(new BigInteger(nonceValue));
@@ -328,7 +338,7 @@ public class Sct20Factory {
 		List<String> workNodesValue = new ArrayList<>();
 		workNodesValue.add(keyStroeAddress);
 		sct20SendRawTransaction.setWorkNode(workNodesValue);
-	    String getCouponTransactionHash = sct20SendRawTransactionService.sct20SendRawTransaction(sct20SendRawTransaction);
+	    String getCouponTransactionHash = sct20SendRawTransactionService.sct20SendRawTransaction(sct20SendRawTransaction , credential);
 	    return getCouponTransactionHash;
 	}
 	
@@ -336,10 +346,11 @@ public class Sct20Factory {
 	public String sct20TokenTradingPauseRelease(String keyStoreFileName, String contractAddress) throws Exception {
 	    List<String> setSymAPIConnectionParam  = new ArrayList<String>();
 		String keyStroeAddress = Sct20Factory.getKeyStoreValue( keyStoreFileName, "address");
+		Credentials credential = keyStoreManagement.getCredentials(keyStoreFileName , systemEnvFactory.KEYSTORE_PASSWORD);
 		setSymAPIConnectionParam.add(keyStroeAddress);
 		setSymAPIConnectionParam.add("pending");
 		// 블록체인 엔인에서 현재의 블록 nonce값을 가져 옵니다.
-		String nonceValue =SymGetAPI.getSymAPIConnection("GET", nodeUrl ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
+		String nonceValue =SymGetAPI.getSymAPIConnection("GET", systemEnvFactory.NODE_URL ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
 		Sct20SendRawTransaction sct20SendRawTransaction	= new Sct20SendRawTransaction();
 		sct20SendRawTransaction.setFrom(keyStroeAddress);
 		sct20SendRawTransaction.setNonce(new BigInteger(nonceValue));
@@ -357,7 +368,7 @@ public class Sct20Factory {
 		List<String> workNodesValue = new ArrayList<>();
 		workNodesValue.add(keyStroeAddress);
 		sct20SendRawTransaction.setWorkNode(workNodesValue);
-	    String getCouponTransactionHash = sct20SendRawTransactionService.sct20SendRawTransaction(sct20SendRawTransaction);	   	
+	    String getCouponTransactionHash = sct20SendRawTransactionService.sct20SendRawTransaction(sct20SendRawTransaction , credential);	   	
 	    return getCouponTransactionHash;
 	}
 

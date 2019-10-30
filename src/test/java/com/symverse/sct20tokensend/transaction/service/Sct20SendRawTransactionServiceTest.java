@@ -14,11 +14,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.web3j.crypto.Credentials;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.utils.Numeric;
 
 import com.symverse.common.GetKeyStoreJsonTest;
 import com.symverse.common.SymGetAPITest;
+import com.symverse.core.config.systemenv.SystemEnvFactory;
 import com.symverse.exception.ServerErrorException;
 import com.symverse.gsym.core.Gsym;
 import com.symverse.gsym.core.JsonRpc2_0Gsym;
@@ -35,29 +37,12 @@ import lombok.extern.slf4j.Slf4j;
 @SpringBootTest
 public class Sct20SendRawTransactionServiceTest {
 	static final Logger logger = LoggerFactory.getLogger(Sct20SendRawTransactionServiceTest.class);
-	/*
-	 *  application properties 설정
-		ca.keystore.passwored=userpassword -> wallet지갑에서 생성한 해당 SYMID의  패스워드를 넣습니다.
-		ca.node.url=http://1.234.16.211:8545 -> 심버스 블록체인 jsonrpc 주소
-		ca.chain.id=3 -> 체인아이디
-	*/
-	
-	@Value("${ca.keystore.passwored}")
-	private String keyStorePassword;
 	
 	
-	// chian id  설정
-	@Value("#{new Integer('${ca.chain.id}')}") // 3
-	private int chianId;
-	
-    @Value("${ca.node.url}")
-    private String nodeUrl; // Symverse BlockChain Engine DevNet httpUrl : 
-	
-    private JsonRpc2_0Gsym jsonRpc2_0Gsym;
-    
-	@Autowired
-	KeyStoreManagement keyStoreManagement;
+	@Autowired KeyStoreManagement keyStoreManagement;
+	@Autowired SystemEnvFactory systemEnvFactory;
 
+	private JsonRpc2_0Gsym jsonRpc2_0Gsym;
 	@Autowired
     public void initJsonRpc2_0Sym(Environment env){
 		this.jsonRpc2_0Gsym = Gsym.build(new HttpService(env.getProperty("ca.node.url")));
@@ -69,12 +54,12 @@ public class Sct20SendRawTransactionServiceTest {
 	 * @return
      * @throws Exception 
 	 */
-	public String sct20SendRawTransaction (Sct20SendRawTransactionTest sct20SendRawTransaction ) throws Exception {
+	public String sct20SendRawTransaction (Sct20SendRawTransactionTest sct20SendRawTransaction  , Credentials credentialParam ) throws Exception {
 		log.debug("[coupon_log]sct20SendRawTransaction methodType ["+sct20SendRawTransaction.getInput().getSctType()+"]");
 		SendSCT20 sendSct20 = new SendSCT20();
 		
 		//TODO sign값 value로 설정 넣어주기
-		byte[] signedMessage = Sct20RawTransactionEncoderTest.signMessage(sct20SendRawTransaction, (byte) chianId, keyStoreManagement.getCredentials() );
+		byte[] signedMessage = Sct20RawTransactionEncoderTest.signMessage(sct20SendRawTransaction, (byte) Integer.parseInt(systemEnvFactory.CHAIN_ID), credentialParam );
 		
 		
 		String hexValue = Numeric.toHexString(signedMessage);
@@ -100,13 +85,15 @@ public class Sct20SendRawTransactionServiceTest {
 	@Test // sct 20 토큰 계약 생성
 	public void sct20_MethodCode_0() throws Exception  {
 		
+		 
+		 Credentials credential = keyStoreManagement.getCredentials( systemEnvFactory.KEYSTORE_FILENAME , systemEnvFactory.KEYSTORE_PASSWORD );
 			
 		 List<String> setSymAPIConnectionParam  = new ArrayList<String>();
 		 String keyStroeAddress = GetKeyStoreJsonTest.getKeyStoreValue("address");
 		 setSymAPIConnectionParam.add(keyStroeAddress);
 		 setSymAPIConnectionParam.add("pending");
 		 // 블록체인 엔인에서 현재의 블록 nonce값을 가져 옵니다.
-		 String nonceValue =SymGetAPITest.getSymAPIConnection("GET", nodeUrl ,"sym_getTransactionCount",setSymAPIConnectionParam ,"");
+		 String nonceValue =SymGetAPITest.getSymAPIConnection("GET", systemEnvFactory.NODE_URL ,"sym_getTransactionCount",setSymAPIConnectionParam ,"");
 		 
 		//[0] => 0x00028f373ec3b7800002
 		//	   [1] => 0x01
@@ -149,19 +136,22 @@ public class Sct20SendRawTransactionServiceTest {
 		 List<String> workNodesValue = new ArrayList<>();                                                                           
 		 workNodesValue.add(keyStroeAddress);                                                                                       
 		 sct20SendRawTransaction.setWorkNode(workNodesValue);                                                                       
-		 String getCouponTransactionHash = this.sct20SendRawTransaction(sct20SendRawTransaction);	    
+		 String getCouponTransactionHash = this.sct20SendRawTransaction(sct20SendRawTransaction , credential);	    
 		 
 	}
 	
 
 	@Test // sct 20  토큰 교환 ( 토큰 전송 )
 	public void sct20_MethodCode_1() throws Exception {
+		
+		Credentials credential = keyStoreManagement.getCredentials( systemEnvFactory.KEYSTORE_FILENAME , systemEnvFactory.KEYSTORE_PASSWORD );
+		
 		List<String> setSymAPIConnectionParam  = new ArrayList<String>();
 		String keyStroeAddress = GetKeyStoreJsonTest.getKeyStoreValue("address");
 		setSymAPIConnectionParam.add(keyStroeAddress);
 		setSymAPIConnectionParam.add("pending");
 		// 블록체인 엔인에서 현재의 블록 nonce값을 가져 옵니다.
-		String nonceValue =SymGetAPITest.getSymAPIConnection("GET", nodeUrl ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
+		String nonceValue =SymGetAPITest.getSymAPIConnection("GET",  systemEnvFactory.NODE_URL ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
 		Sct20SendRawTransactionTest sct20SendRawTransaction	= new Sct20SendRawTransactionTest();
 		sct20SendRawTransaction.setFrom(keyStroeAddress);
 		sct20SendRawTransaction.setNonce(new BigInteger(nonceValue));
@@ -181,18 +171,19 @@ public class Sct20SendRawTransactionServiceTest {
 		List<String> workNodesValue = new ArrayList<>();
 		workNodesValue.add(keyStroeAddress);
 		sct20SendRawTransaction.setWorkNode(workNodesValue);
-  	    String getCouponTransactionHash = this.sct20SendRawTransaction(sct20SendRawTransaction);	     
+	    String getCouponTransactionHash = this.sct20SendRawTransaction(sct20SendRawTransaction , credential);	   
 	}
 
 	
 	@Test // 제 3자 토큰 교환(송금) - ( 스펜더 계정에서 특정 SymId에게 송금하기 )  
 	public void sct20_MethodCode_2() throws Exception {
+		 Credentials credential = keyStoreManagement.getCredentials( systemEnvFactory.KEYSTORE_FILENAME , systemEnvFactory.KEYSTORE_PASSWORD );
 		 List<String> setSymAPIConnectionParam  = new ArrayList<String>();
 		 String keyStroeAddress = GetKeyStoreJsonTest.getKeyStoreValue("address");
 		 setSymAPIConnectionParam.add(keyStroeAddress);
 		 setSymAPIConnectionParam.add("pending");
 		 // 블록체인 엔인에서 현재의 블록 nonce값을 가져 옵니다.
-		 String nonceValue =SymGetAPITest.getSymAPIConnection("GET", nodeUrl ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
+		 String nonceValue =SymGetAPITest.getSymAPIConnection("GET",  systemEnvFactory.NODE_URL ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
 		 Sct20SendRawTransactionTest sct20SendRawTransaction	= new Sct20SendRawTransactionTest();
 		 sct20SendRawTransaction.setFrom(keyStroeAddress); // 제 3자 스펜더의 SYMID
 		 sct20SendRawTransaction.setNonce(new BigInteger(nonceValue));
@@ -213,7 +204,7 @@ public class Sct20SendRawTransactionServiceTest {
 		 List<String> workNodesValue = new ArrayList<>();
 		 workNodesValue.add("00022000000000270002");
 		 sct20SendRawTransaction.setWorkNode(workNodesValue);
-	     String getCouponTransactionHash = this.sct20SendRawTransaction(sct20SendRawTransaction);	   
+		 String getCouponTransactionHash = this.sct20SendRawTransaction(sct20SendRawTransaction , credential);	   	   
 	}
 
 	
@@ -221,12 +212,13 @@ public class Sct20SendRawTransactionServiceTest {
 
 	@Test // 제 3자 토큰 승인 ( 스펜더 설정 )  - 제 3자 토큰 승인을 해야  제 3자 토큰 교환을 할 수 있습니다. 
 	public void sct20_MethodCode_3() throws Exception {
+		Credentials credential = keyStoreManagement.getCredentials( systemEnvFactory.KEYSTORE_FILENAME , systemEnvFactory.KEYSTORE_PASSWORD );
 		List<String> setSymAPIConnectionParam  = new ArrayList<String>();
 		String keyStroeAddress = GetKeyStoreJsonTest.getKeyStoreValue("address");
 		setSymAPIConnectionParam.add(keyStroeAddress);
 		setSymAPIConnectionParam.add("pending");
 		// 블록체인 엔진에서 현재의 블록 nonce값을 가져 옵니다.
-		String nonceValue =SymGetAPITest.getSymAPIConnection("GET", nodeUrl ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
+		String nonceValue =SymGetAPITest.getSymAPIConnection("GET",  systemEnvFactory.NODE_URL ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
 		
 		Sct20SendRawTransactionTest sct20SendRawTransaction	= new Sct20SendRawTransactionTest();
 		sct20SendRawTransaction.setFrom(keyStroeAddress);
@@ -247,7 +239,7 @@ public class Sct20SendRawTransactionServiceTest {
 		List<String> workNodesValue = new ArrayList<>();
 		workNodesValue.add(keyStroeAddress);
 		sct20SendRawTransaction.setWorkNode(workNodesValue);
-	    String getCouponTransactionHash = this.sct20SendRawTransaction(sct20SendRawTransaction);	   
+		String getCouponTransactionHash = this.sct20SendRawTransaction(sct20SendRawTransaction , credential);	   	   
 	}
 	
 	
@@ -257,12 +249,13 @@ public class Sct20SendRawTransactionServiceTest {
 
 	@Test // sct 20 토큰 추가 발행 ( 토큰 총량 증가하기 )
 	public void sct20_MethodCode_4() throws Exception {
+		Credentials credential = keyStoreManagement.getCredentials( systemEnvFactory.KEYSTORE_FILENAME , systemEnvFactory.KEYSTORE_PASSWORD );
 		List<String> setSymAPIConnectionParam  = new ArrayList<String>();
 		String keyStroeAddress = GetKeyStoreJsonTest.getKeyStoreValue("address");
 		setSymAPIConnectionParam.add(keyStroeAddress);
 		setSymAPIConnectionParam.add("pending");
 		// 블록체인 엔인에서 현재의 블록 nonce값을 가져 옵니다.
-		String nonceValue =SymGetAPITest.getSymAPIConnection("GET", nodeUrl ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
+		String nonceValue =SymGetAPITest.getSymAPIConnection("GET",  systemEnvFactory.NODE_URL ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
 		Sct20SendRawTransactionTest sct20SendRawTransaction	= new Sct20SendRawTransactionTest();
 		sct20SendRawTransaction.setFrom(keyStroeAddress);
 		sct20SendRawTransaction.setNonce(new BigInteger(nonceValue));
@@ -282,7 +275,7 @@ public class Sct20SendRawTransactionServiceTest {
 		List<String> workNodesValue = new ArrayList<>();
 		workNodesValue.add(keyStroeAddress);
 		sct20SendRawTransaction.setWorkNode(workNodesValue);
-	    String getCouponTransactionHash = this.sct20SendRawTransaction(sct20SendRawTransaction);	   
+		String getCouponTransactionHash = this.sct20SendRawTransaction(sct20SendRawTransaction , credential);	   	   
 	}
 
 	
@@ -290,12 +283,13 @@ public class Sct20SendRawTransactionServiceTest {
 
 	@Test // sct 20 토큰 태움 - ( 토큰 총량 감소하기 )
 	public void sct20_MethodCode_5() throws Exception {
+		Credentials credential = keyStoreManagement.getCredentials( systemEnvFactory.KEYSTORE_FILENAME , systemEnvFactory.KEYSTORE_PASSWORD );
 		List<String> setSymAPIConnectionParam  = new ArrayList<String>();
 		String keyStroeAddress = GetKeyStoreJsonTest.getKeyStoreValue("address");
 		setSymAPIConnectionParam.add(keyStroeAddress);
 		setSymAPIConnectionParam.add("pending");
 		// 블록체인 엔인에서 현재의 블록 nonce값을 가져 옵니다.
-		String nonceValue =SymGetAPITest.getSymAPIConnection("GET", nodeUrl ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
+		String nonceValue =SymGetAPITest.getSymAPIConnection("GET",  systemEnvFactory.NODE_URL ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
 		Sct20SendRawTransactionTest sct20SendRawTransaction	= new Sct20SendRawTransactionTest();
 		sct20SendRawTransaction.setFrom(keyStroeAddress);
 		sct20SendRawTransaction.setNonce(new BigInteger(nonceValue));
@@ -315,18 +309,19 @@ public class Sct20SendRawTransactionServiceTest {
 		List<String> workNodesValue = new ArrayList<>();
 		workNodesValue.add(keyStroeAddress);
 		sct20SendRawTransaction.setWorkNode(workNodesValue);
-	    String getCouponTransactionHash = this.sct20SendRawTransaction(sct20SendRawTransaction);	   
+		String getCouponTransactionHash = this.sct20SendRawTransaction(sct20SendRawTransaction , credential);	   	   
 	}
 	
 	
 	@Test // sct 20 토큰 거래 일시 정지  
 	public void sct20_MethodCode_6() throws Exception {
+		Credentials credential = keyStoreManagement.getCredentials( systemEnvFactory.KEYSTORE_FILENAME , systemEnvFactory.KEYSTORE_PASSWORD );
 	    List<String> setSymAPIConnectionParam  = new ArrayList<String>();
 		String keyStroeAddress = GetKeyStoreJsonTest.getKeyStoreValue("address");
 		setSymAPIConnectionParam.add(keyStroeAddress);
 		setSymAPIConnectionParam.add("pending");
 		// 블록체인 엔인에서 현재의 블록 nonce값을 가져 옵니다.
-		String nonceValue =SymGetAPITest.getSymAPIConnection("GET", nodeUrl ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
+		String nonceValue =SymGetAPITest.getSymAPIConnection("GET",  systemEnvFactory.NODE_URL ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
 		Sct20SendRawTransactionTest sct20SendRawTransaction	= new Sct20SendRawTransactionTest();
 		sct20SendRawTransaction.setFrom(keyStroeAddress);
 		sct20SendRawTransaction.setNonce(new BigInteger(nonceValue));
@@ -344,17 +339,18 @@ public class Sct20SendRawTransactionServiceTest {
 		List<String> workNodesValue = new ArrayList<>();
 		workNodesValue.add(keyStroeAddress);
 		sct20SendRawTransaction.setWorkNode(workNodesValue);
-	    String getCouponTransactionHash = this.sct20SendRawTransaction(sct20SendRawTransaction);	   	
+		String getCouponTransactionHash = this.sct20SendRawTransaction(sct20SendRawTransaction , credential);	   	   	
 	}
 	
 	@Test // sct 20 토큰 거래 일시 정지  해제
 	public void sct20_MethodCode_7() throws Exception {
+		Credentials credential = keyStoreManagement.getCredentials( systemEnvFactory.KEYSTORE_FILENAME , systemEnvFactory.KEYSTORE_PASSWORD );
 	    List<String> setSymAPIConnectionParam  = new ArrayList<String>();
 		String keyStroeAddress = GetKeyStoreJsonTest.getKeyStoreValue("address");
 		setSymAPIConnectionParam.add(keyStroeAddress);
 		setSymAPIConnectionParam.add("pending");
 		// 블록체인 엔인에서 현재의 블록 nonce값을 가져 옵니다.
-		String nonceValue =SymGetAPITest.getSymAPIConnection("GET", nodeUrl ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
+		String nonceValue =SymGetAPITest.getSymAPIConnection("GET",  systemEnvFactory.NODE_URL ,"sym_getTransactionCount",setSymAPIConnectionParam ,""); 
 		Sct20SendRawTransactionTest sct20SendRawTransaction	= new Sct20SendRawTransactionTest();
 		sct20SendRawTransaction.setFrom(keyStroeAddress);
 		sct20SendRawTransaction.setNonce(new BigInteger(nonceValue));
@@ -372,7 +368,7 @@ public class Sct20SendRawTransactionServiceTest {
 		List<String> workNodesValue = new ArrayList<>();
 		workNodesValue.add(keyStroeAddress);
 		sct20SendRawTransaction.setWorkNode(workNodesValue);
-	    String getCouponTransactionHash = this.sct20SendRawTransaction(sct20SendRawTransaction);	   	
+		String getCouponTransactionHash = this.sct20SendRawTransaction(sct20SendRawTransaction , credential);	   	   	
 	}
 
 	

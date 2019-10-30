@@ -25,7 +25,7 @@ apply plugin: 'docker'
 
 bootJar {
     baseName = 'sct20sample-spring-boot-docker'
-    version =  '0.1.0'
+    version =  '1.0.14'
 }
 
 
@@ -89,6 +89,9 @@ dependencies {
 	//spring boot batch
  	compile("org.springframework.boot:spring-boot-starter-batch")
     compile("org.hsqldb:hsqldb")
+    
+    //view template
+	compile('org.springframework.boot:spring-boot-starter-thymeleaf')
 	
 }
 

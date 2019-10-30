@@ -1,13 +1,12 @@
 eclipse.preferences.version=1
 encoding//src/main/java/com/symverse/common/model/CommUtil.java=UTF-8
 encoding//src/main/java/com/symverse/sct20/transaction/service/Sct20Factory.java=UTF-8
-encoding//src/main/java/com/symverse/sct20/transaction/service/Sct20RawTransactionEncoder.java=UTF-8
+encoding//src/main/java/com/symverse/sct20/transaction/service/Sct20RawTransactionEncoderEngineVersion1_0_11.java=UTF-8
 encoding//src/main/java/com/symverse/sct20/transaction/service/Sct20SendRawTransactionService.java=UTF-8
 encoding//src/test/java/com/symverse=UTF-8
 encoding//src/test/java/com/symverse/common/CommUtil.java=UTF-8
 encoding//src/test/java/com/symverse/sct20tokensend/transaction/domain/Sct20SendRawTransactionTest.java=UTF-8
 encoding//src/test/java/com/symverse/sct20tokensend/transaction/service/RlpEncodingTestSample.java=UTF-8
-encoding//src/test/java/com/symverse/sct20tokensend/transaction/service/Sct20GenerateFactory.java=UTF-8
 encoding//src/test/java/com/symverse/sct20tokensend/transaction/service/Sct20RawTransactionEncoderTest.java=UTF-8
 encoding//src/test/java/com/symverse/sct20tokensend/transaction/service/Sct20SendRawTransactionServiceTest.java=UTF-8
 encoding/<project>=UTF-8

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+	<body th:fragment="MainContent">
+	<div  layout:fragment="modalPopUp"></div>
+	<div id="wrapper" >
+			 <body th:replace="/layout/main_menuTop :: MenuTop"> </body>
+			 <body th:replace="/layout/main_menu :: Menu"> </body>
+			 <div id="page-wrapper" >
+					<div class="header" layout:fragment="page_header"></div>
+		            <div id="page-inner"> 
+	                        <!--S:내용 영역 -->
+								<div  layout:fragment="content"></div>
+	                        <!--E:내용 영역 -->
+		    		</div>
+	   		</div>
+	   		<p  layout:fragment="MainFooter"></p>
+	</div>			
+	</body>
+</html>

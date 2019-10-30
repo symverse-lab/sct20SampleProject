@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<body th:fragment="Menu">
+			<!--/. NAV TOP  -->
+			<nav class="navbar-default navbar-side" role="navigation">
+				<div class="sidebar-collapse">
+					<ul class="nav" id="main-menu">
+						<li><a id="storeInfoList" class="waves-effect waves-dark" href="#"><i class="fa fa-sitemap"></i>가맹 서비스<span class="fa arrow"></span></a>
+							<ul class="nav nav-second-level" id="storeMenu">
+								<li><a id="storeInfoListMenu" th:class="${#strings.startsWith( #httpServletRequest.requestURI ,'/walletPartner') } ? white-text  : '' " href="#">가맹점 관리<span class="fa arrow"></span></a>
+									<ul class="nav nav-third-level" >
+										<li><a  th:class="${#strings.startsWith( #httpServletRequest.requestURI ,'/walletPartner/storeInfoList') } ? white-text  : '' " href="/walletPartner/storeInfoList">가맹점 리스트</a></li>
+									</ul>
+								</li>
+								<li><a id="termsManageListMenu" th:class="${#strings.startsWith( #httpServletRequest.requestURI ,'/walletUtils') } ? white-text  : '' " href="#">가맹 약관 관리<span class="fa arrow"></span></a>
+									<ul class="nav nav-third-level">
+										<li><a th:class="${#strings.startsWith( #httpServletRequest.requestURI ,'/walletUtils/termsManageList') } ? white-text  : '' " href="/walletUtils/termsManageList">약관 리스트</a></li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+						<li><a id="couponManageMenu" class="waves-effect waves-dark"><i class="fa fa-desktop"></i>쿠폰 관리<span class="fa arrow"></span></a>
+							<ul class="nav nav-second-level">
+								
+								<li><a id="couponMenu" th:class="${#strings.startsWith( #httpServletRequest.requestURI ,'/walletCoupon') } ? white-text  : '' "  href="#">쿠폰<span class="fa arrow"></span></a>
+									<ul class="nav nav-third-level">
+										<li><a id="tpointStoreInfoListMenu" th:class="${#strings.startsWith( #httpServletRequest.requestURI ,'/walletCoupon/tpointStoreInfoList') } ? white-text  : '' "  href="/walletCoupon/tpointStoreInfoList">쿠폰 T-point 충전 내역</a></li>
+										<li><a id="couponTcChangeListMenu" th:class="${#strings.startsWith( #httpServletRequest.requestURI ,'/walletCoupon/couponTcChangeList') } ? white-text  : '' "  href="/walletCoupon/couponTcChangeList">쿠폰 발급 내역 (요약)</a></li>
+										<li>
+											<a id="couponCpoint" th:class="${#strings.startsWith( #httpServletRequest.requestURI ,'/walletCoupon/couponCpointInfoList') } ? white-text  : '' " >쿠폰 발급 내역 (상세)<span class="fa arrow"></span></a>
+											<ul class="nav nav-fourthly-level">
+                                            <li>
+                                                <a id="couponCpointInfoListMenu" th:class="${#strings.startsWith( #httpServletRequest.requestURI ,'/walletCoupon/couponCpointInfoList') } ? white-text  : '' "  href="/walletCoupon/couponCpointInfoList" >시리얼 넘버 관리</a>
+                                            </li>
+                                        </ul>
+										</li>
+										<li><a id="couponCpointTranListMenu" th:class="${#strings.startsWith( #httpServletRequest.requestURI ,'/walletCoupon/couponCpointTranList') } ? white-text  : '' "  href="/walletCoupon/couponCpointTranList">쿠폰 거래 Menu</a></li>
+									</ul>
+								</li>
+								<!-- <li><a href="#">N/A</a></li>
+								<li><a href="#">N/A</a></li> -->
+							</ul>
+						</li>
+						<li><a th:class="${#strings.startsWith( #httpServletRequest.requestURI ,'/walletUtils/utilsCodeList') } ? white-text  : '' "  href="/walletUtils/utilsCodeList" ><i class="fa fa-qrcode"></i>Code관리 Page</a></li>
+					</ul>
+				</div>
+			</nav>
+<script type="text/javascript">
+
+var currentLocation = window.location.href.toString().split(window.location.host)[1];
+
+// 
+
+
+
+
+$(window).on("load", function(){
+	
+	// init 셋팅값 
+	if( currentLocation.indexOf("/walletCoupon") > -1 ){
+		$( '#couponManageMenu' ).click();
+		$( '#couponMenu' ).click();
+	}
+	
+	
+	if( currentLocation.indexOf("/walletPartner/storeInfoList") > -1 ){
+		$( '#storeInfoList' ).click();
+		$( '#storeInfoListMenu' ).click();
+	}else if( currentLocation.indexOf("/walletUtils/termsManageList") > -1 ){
+		$( '#storeInfoList' ).click();
+		$( '#termsManageListMenu' ).click();
+	}else if( currentLocation.indexOf("/walletCoupon/couponCpointInfoList") > -1 ){
+		$( '#couponCpoint' ).click();
+		$( '#couponCpointInfoListMenu' ).click();
+	}else if( currentLocation.indexOf("/walletCoupon/couponCpointTranList") > -1 ){
+		$( '#couponCpointTranList' ).click();
+	}
+	
+	
+	
+});
+
+
+
+
+</script>			
+</body>
+
+</html>
+
+

@@ -21,8 +21,9 @@ public class PropertiesConfig implements EnvironmentPostProcessor{
 
 	static final Logger logger = LoggerFactory.getLogger(PropertiesConfig.class);
 	
-	private static final String SERVICE_MODE = Optional.ofNullable(System.getProperty("SERVICE_MODE"))
-			.orElse("mainnet").toLowerCase();
+	private static final String SERVICE_MODE = Optional.ofNullable(System.getProperty("SERVICE_MODE")).orElse("mainnet").toLowerCase();
+	
+	
 	
 	private final PropertiesPropertySourceLoader loader = new PropertiesPropertySourceLoader();
 

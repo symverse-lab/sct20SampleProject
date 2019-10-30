@@ -36,25 +36,47 @@ public class SCT20ContractRegisterCronJob {
 //  	*           *　　　　　　*　　　　　　*　　　　　　*　　　　　　*
 // 초(0-59)   분(0-59)　　시간(0-23)　　일(1-31)　　월(1-12)　　요일(0-7) 
 //   @Scheduled(cron = "0 * 9 * * ?") 
-   @Scheduled(cron = "0/30 * * * * *")  
+   // @Scheduled(cron = "0/30 * * * * *")  
    public void cronJobSch() throws Exception {
-	   
 	   	String amountValue = "1";
 	   	
-	   	
-		// String address = GetKeyStoreJson.getKeyStoreValue("address");
-		String jaehyunAddress = "0x00028530e81e13060002";
-		String KEYSTORE_FILENAME = "keystore.json";
+	   	// 0x00028530e81e13060002 재현
+	   	// 0x00026b315d4668310002 경훈 
+	   	// 0x0002e43f6ff018010002 팀장
+
 		
-		String resultHashValue = sct20Factory.sendRawTransaction(KEYSTORE_FILENAME, jaehyunAddress, amountValue);
-		System.out.println(amountValue);
-		System.out.println("resultHashValue :"+ resultHashValue);
+		// String address = GetKeyStoreJson.getKeyStoreValue("address");
+		String toAddreess2 = "0x00026b315d4668310002"; // 재현 -> 김경훈
+		String KEYSTORE_FILENAME2 = "keystore.json";
+		String resultHashValue2 = sct20Factory.sendRawTransaction(KEYSTORE_FILENAME2, toAddreess2, amountValue);
+		System.out.println("재현  to 경훈 :"+ resultHashValue2);
+		
+		
+		// String address = GetKeyStoreJson.getKeyStoreValue("address");
+		String toAddreess3 = "0x0002e43f6ff018010002"; //김경훈 - > 팀장님
+		String KEYSTORE_FILENAME3 = "kkh-leader.json";
+		String resultHashValue4 = sct20Factory.sendRawTransaction(KEYSTORE_FILENAME3, toAddreess3, amountValue);
+		System.out.println("경훈 to GD :"+ resultHashValue4);
+		
+
+	   	// String address = GetKeyStoreJson.getKeyStoreValue("address");
+	   	String toAddreess = "0x00028530e81e13060002";
+	   	String KEYSTORE_FILENAME = "gd-king.json";
+	   	String resultHashValue = sct20Factory.sendRawTransaction(KEYSTORE_FILENAME, toAddreess, amountValue);
+	   	System.out.println(amountValue);
+	   	System.out.println("GD to 재현 :"+ resultHashValue);
+		
+		
+		
+		
+		
+		
 		
 	   
    }
    
    
-   @Scheduled(initialDelay = 10000 , fixedDelay = 10000)  
+   // @Scheduled(initialDelay = 10000 , fixedDelay = 10000)  
    public void cronJobScth() throws Exception {
 	   
 		System.out.println("resultHashValuetest  :");
