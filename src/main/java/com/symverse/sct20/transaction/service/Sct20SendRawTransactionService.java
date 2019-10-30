@@ -40,10 +40,6 @@ public class Sct20SendRawTransactionService {
 	private String serverEnv;
 	
 	
-	// chian id  설정
-	@Value("#{new Integer('${ca.chain.id}')}") // 3
-	private int chianId;
-	
     private JsonRpc2_0Gsym jsonRpc2_0Gsym;
     
 	@Autowired

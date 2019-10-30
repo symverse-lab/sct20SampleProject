@@ -45,10 +45,7 @@ dependencies {
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
-    
-    
     compile('org.springframework.boot:spring-boot-starter-web')
-    compile('org.springframework.boot:spring-boot-starter-thymeleaf')
 	
 	//test starter
 	testCompile('org.springframework.boot:spring-boot-starter-test')
@@ -85,6 +82,13 @@ dependencies {
 	
 	// 암호화 관련 모듈
 	compile group: 'com.github.ulisesbocchio', name: 'jasypt-spring-boot-starter', version: '2.1.1'
+	
+	
+	
+	
+	//spring boot batch
+ 	compile("org.springframework.boot:spring-boot-starter-batch")
+    compile("org.hsqldb:hsqldb")
 	
 }
 

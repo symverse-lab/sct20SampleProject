@@ -39,15 +39,7 @@ public class Sct20Controller {
 	private static final String KEYSTORE_PASSWORD = Optional.ofNullable(System.getProperty("KEYSTORE_PASSWORD")).orElse("0000").toLowerCase();
 	private static final String KEYSTORE_FILENAME = Optional.ofNullable(System.getProperty("KEYSTORE_FILENAME")).orElse("keystore.json").toLowerCase();
 	
-	
-	@Value("${ca.node.url}")	private String engineNodeRequsetUrl;
-	
 	@Autowired private Sct20Factory sct20Factory;
-
-    @RequestMapping("/hello")
-    public @ResponseBody String hello() {
-        return "Hello, Spring Boot";
-    }
 
 	
 	@RequestMapping(value="/passswordEnc", method=RequestMethod.POST)
@@ -102,6 +94,7 @@ public class Sct20Controller {
 		String resultHashValue = sct20Factory.sendRawTransaction(KEYSTORE_FILENAME, jaehyunAddress, amountValue);
 		return resultHashValue;
 	}
+	
 	
 	
 	// sct 20 토큰 계약 생성

@@ -20,15 +20,9 @@
     <logger name="com.example.web">
         <level value="debug" />
     </logger>
-    <logger name="java.sql">
-        <level value="debug" />
-    </logger>
-   	<logger name="org.mybatis" level="ALL"  additivity="false">
-    	<appender-ref ref="CONSOLE" />
-	</logger>
       
     <root level="INFO">			
-		  <springProfile name="dev">
+		  <springProfile name="devnet">
 		    <appender-ref ref="CONSOLE"/>
 		  </springProfile>
 		
@@ -36,7 +30,11 @@
 		  	<appender-ref ref="CONSOLE"/>
 		  </springProfile>
 		  
-		  <springProfile name="prod">
+		  <springProfile name="testnet">
+		  	<appender-ref ref="CONSOLE"/>
+		  </springProfile>
+		  
+		   <springProfile name="mainnet">
 		  	<appender-ref ref="CONSOLE"/>
 		  </springProfile>
     </root>

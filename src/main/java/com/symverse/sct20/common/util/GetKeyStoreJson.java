@@ -1,7 +1,6 @@
 package com.symverse.sct20.common.util;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -12,7 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.parser.JSONParser;
-import net.minidev.json.parser.ParseException;
 
 
 @Slf4j
@@ -20,7 +18,7 @@ public class GetKeyStoreJson {
 	
 	private static final String SERVICE_MODE = Optional.ofNullable(System.getProperty("SERVICE_MODE")).orElse("main").toLowerCase();
 	
-	public static String getKeyStoreValue(String Key) throws ParseException, IOException {
+	public static String getKeyStoreValue(String Key) throws Exception {
 		JSONParser parser = new JSONParser();
 		ObjectMapper objectMapper = new ObjectMapper();
 		log.debug("[ca_log]load credential");
