@@ -26,7 +26,7 @@ public class SystemEnvFactory {
 	@PostConstruct
 	public void systemEnvInitParameter() {
 		this.SERVICE_MODE = Optional.ofNullable(System.getProperty("SERVICE_MODE")).orElse("mainnet").toLowerCase();
-		this.KEYSTORE_PASSWORD = Optional.ofNullable(System.getProperty("KEYSTORE_PASSWORD")).orElse("0000").toLowerCase();
+		this.KEYSTORE_PASSWORD = Optional.ofNullable(System.getProperty("KEYSTORE_PASSWORD")).orElse("INSERT_PASSWORD").toLowerCase();
 		this.KEYSTORE_FILENAME = Optional.ofNullable(System.getProperty("KEYSTORE_FILENAME")).orElse("keystore.json").toLowerCase();
 		this.CHAIN_ID = Optional.ofNullable(System.getProperty("CHAIN_ID")).orElse("1").toLowerCase();
 		this.NODE_URL = Optional.ofNullable(System.getProperty("NODE_URL")).orElse("http://1.234.16.207:8545").toLowerCase();
@@ -34,14 +34,14 @@ public class SystemEnvFactory {
 		
 		log.debug("");
 		log.debug("");
-		log.debug(" [[ ↓↓ SystemEnvFactory Argument ↓↓ ]] ");
+		log.debug(" [[ ↓↓ SystemEnvFactory ENV Argument ↓↓ ]] ");
 		log.debug("★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★ ");
 		log.debug(" [ ENGINE_VERSION : " + this.ENGINE_VERSION + " ]");
 		log.debug(" [ KEYSTORE_FILENAME : " + this.KEYSTORE_FILENAME + " ]");
 		log.debug(" [ KEYSTORE_PASSWORD : " + this.KEYSTORE_PASSWORD + " ]");
 		log.debug(" [ CHAIN_ID : " + this.CHAIN_ID + " ]");
 		log.debug(" [ NODE_URL : " + this.NODE_URL + " ]");
-		log.debug(" [ NODE_URL : " + this.NODE_URL + " ]");
+		log.debug(" [ ENGINE_VERSION : " + this.ENGINE_VERSION + " ]");
 		log.debug("★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★ ");
 		log.debug("");
 		log.debug("");

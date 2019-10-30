@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>jsonParsing</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+   
+<style>
+    #btnDownload {cursor:pointer;color:blue;}    
+</style>
+
+
+     
+<script>
+    function isJsonString(str) {
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            alert("형식이 일치하지 않습니다.");
+
+            $("#outputData").val("");
+
+            return false;
+        }
+        return true;
+    }
+  
+    $(function(){
+        
+        var address, crypto, id, version, resultData, result;
+        
+        //json data parsing
+        $("#btnParsing").on("click", function(){                    
+                        
+            var inputData = $("#inputData").val();
+            isJsonString(inputData);
+            
+            var obj = JSON.parse(inputData);
+            
+            address = obj[0].ca.address;
+            crypto = obj[0].crypto;
+            id = obj[0].id;
+            version = obj[0].version;
+          
+            //ca address check
+            if(!address){
+                alert("address가 존재하지 않습니다.");
+                
+                $("#outputData").val("");
+                return false;
+            }
+                        
+            //crypto check
+            var cryptoData = JSON.stringify(obj[0].crypto);
+                        
+            JSON.parse(cryptoData, (key, value) => {
+                if(!value){
+                    alert(key + "가 존재하지 않습니다.");
+                    
+                    return false;
+                }
+            });
+            
+            //id check
+            if(!id){
+                alert("id가 존재하지 않습니다.");
+                
+                $("#outputData").val("");
+                return false;
+            }
+            
+            //version check
+            if(!version){
+                alert("version이 존재하지 않습니다.");
+                
+                $("#outputData").val("");
+                return false;
+            }
+            
+            resultData = {
+                            "address": address, 
+                            "crypto": {
+                                "cipher" : crypto.cipher,
+                                "ciphertext" : crypto.ciphertext,
+                                "cipherparams" : crypto.cipherparams,
+                                "kdf" : crypto.kdf,
+                                "kdfparams" : crypto.kdfparams,
+                                "mac" : crypto.mac
+                            },
+                            "id": id, 
+                            "version": version
+            };
+            
+            result = JSON.stringify(resultData, null, 2);            
+             
+            $("#outputData").val(result);
+            
+        });
+                
+        //json file download
+        $("#btnDownload").on("click", function(){
+            
+            $("#btnDownload").attr("data-obj", result);
+            
+            $("<a/>", {
+                "download": "keystore.json",
+                "href" : "data:application/json," + encodeURIComponent(JSON.stringify($(this).data().obj, null, 2))
+              }).appendTo("body")
+              .click(function() {
+                 $(this).remove()
+              })[0].click()
+            });
+        
+    });    
+</script>
+
+</head>
+<body>
+
+    <h2>Insert Wallet KeyStore Json Format&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Server KeyStore Format </h2>
+    <textarea id="inputData" name="input_data" cols="100" rows="50" style="float: left;"></textarea>
+    <button id="btnParsing" style="float:left; margin-top:300px; margin-left:10px; margin-right:10px; cursor: pointer;">→ Convert to Server KeyStore →</button>
+   
+    <textarea id="outputData" name="output_data" cols="100" rows="50" style="float: left;"></textarea>
+    <button id="btnDownload" style="float:left; margin-top:300px; margin-left:10px; margin-right:10px;">Download Server KeyStore</button>
+</body>
+</html>
