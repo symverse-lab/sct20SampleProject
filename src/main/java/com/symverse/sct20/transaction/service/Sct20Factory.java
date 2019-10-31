@@ -171,7 +171,7 @@ public class Sct20Factory {
 
 	
 	// 제 3자 토큰 교환(송금) - ( 스펜더 계정에서 특정 SymId에게 송금하기 )  
-	public String sct20SpenderSendToken(String keyStoreFileName , String contractAddress ,String spenderSymid , String toSymId , String sendTokenAmt) throws Exception {
+	public String sct20SpenderSendToken(String keyStoreFileName , String contractAddress , String toSymId , String sendTokenAmt) throws Exception {
 		 List<String> setSymAPIConnectionParam  = new ArrayList<String>();
 		 String keyStroeAddress = Sct20Factory.getKeyStoreValue( keyStoreFileName, "address");
 		 Credentials credential = keyStoreManagement.getCredentials(keyStoreFileName , systemEnvFactory.KEYSTORE_PASSWORD );
@@ -190,9 +190,9 @@ public class Sct20Factory {
 		 inputParam.setSctType("20"); // 20 , 30 , 40
 		 inputParam.setMethod("2");  // 0 , 1 , 2, 3, 4, 5, 6 , 7
 		 ArrayList<String> paramsArray = new ArrayList<String>();
-		 paramsArray.add(spenderSymid);  // 제 3자 토큰 위임자 symid ( 최초 토큰을 생성한 symid ) //위임한 SymId를 넣으면 안됨! // ★★서명은 제3자 스펜더 SymId 개인키로 서명 해야합니다.★★
-		 paramsArray.add(toSymId);  // 제 3자 토큰 위임자 symid ( 수신자 symid ) 
-		 paramsArray.add(sendTokenAmt); // 토큰 양
+		 paramsArray.add( keyStroeAddress );  // 제 3자 토큰 위임자 symid ( 최초 토큰을 생성한 symid ) //위임한 SymId를 넣으면 안됨! // ★★서명은 제3자 스펜더 SymId 개인키로 서명 해야합니다.★★
+		 paramsArray.add( toSymId );  // 제 3자 토큰 위임자 symid ( 수신자 symid ) 
+		 paramsArray.add( sendTokenAmt ); // 토큰 양
 		 inputParam.setParams(paramsArray);
 		 sct20SendRawTransaction.setInput(inputParam);
 		 sct20SendRawTransaction.setType("1");
