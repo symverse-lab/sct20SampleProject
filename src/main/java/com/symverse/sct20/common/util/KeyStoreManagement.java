@@ -21,8 +21,14 @@ public class KeyStoreManagement {
 
 		try {
 			log.debug("[ca_log]load credential");
-			log.debug("[ca_log] credential keystorename : "+keyStoreName+"credential password :"+password);
-			File keyStoreFile = new ClassPathResource("keystore/"+keyStoreName).getFile();
+			log.debug("[ca_log] credential keystorename : "+keyStoreName+" credential password : "+password);
+		    String os = System.getProperty("os.name").toLowerCase();
+		    File keyStoreFile;
+		    if(os.contains("win")) { //local
+		    	 keyStoreFile = new ClassPathResource("keystore/"+keyStoreName).getFile();
+		    }else{
+		    	 keyStoreFile = new File("/webapp/keystore/"+keyStoreName);
+		    }
 			credentials = WalletUtils.loadCredentials(password, keyStoreFile);
 
 		} catch (IOException e) {

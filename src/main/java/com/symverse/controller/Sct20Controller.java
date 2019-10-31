@@ -93,7 +93,7 @@ public class Sct20Controller {
 	@ResponseBody
 	public Object sendRawTransaction( String amountValue ) throws Exception {
 		// String address = GetKeyStoreJson.getKeyStoreValue("address");
-		String jaehyunAddress = "0x00028530e81e13060002";
+		String jaehyunAddress = "0x00026159665b7e620002";  //old폰
 		System.out.println(amountValue);
 		String resultHashValue = sct20Factory.sendRawTransaction(systemEvn.KEYSTORE_FILENAME, jaehyunAddress, amountValue);
 		return resultHashValue;

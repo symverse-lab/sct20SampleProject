@@ -29,9 +29,17 @@ public class GetKeyStoreJson {
 		log.debug("[ca_log]load credential");
 		
 		System.out.println("[ Loading KeyStore File : "+systemEvn.KEYSTORE_FILENAME +"]");
-		File file = new ClassPathResource(systemEvn.KEYSTORE_FILENAME).getFile();
+	    String os = System.getProperty("os.name").toLowerCase();
+	    File keyStoreFile;
+		if(os.contains("win")) { //local
+	    	 keyStoreFile = new ClassPathResource("keystore/"+systemEvn.KEYSTORE_FILENAME).getFile();
+	    }else{
+	    	 keyStoreFile = new File("/webapp/keystore/"+systemEvn.KEYSTORE_FILENAME);
+	    }
 		
-		Map<String, String> jsonFile = objectMapper.readValue(file, Map.class);
+		// File file = new ClassPathResource(systemEvn.KEYSTORE_FILENAME).getFile();
+		
+		Map<String, String> jsonFile = objectMapper.readValue(keyStoreFile, Map.class);
 		String value =  jsonFile.get(Key);
 		return Numeric.prependHexPrefix(value);
 	}
