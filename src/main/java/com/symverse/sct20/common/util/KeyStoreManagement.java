@@ -3,11 +3,14 @@ package com.symverse.sct20.common.util;
 import java.io.File;
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.WalletUtils;
+
+import com.symverse.core.config.systemenv.SystemEnvFactory;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,6 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class KeyStoreManagement {
 
+
+	@Autowired SystemEnvFactory systemEvn;  // System.getProperty를 가져옵니다.
+	
 	public Credentials getCredentials(String keyStoreName , String password ) throws Exception {
 
         Credentials credentials;
@@ -22,12 +28,11 @@ public class KeyStoreManagement {
 		try {
 			log.debug("[ca_log]load credential");
 			log.debug("[ca_log] credential keystorename : "+keyStoreName+" credential password : "+password);
-		    String os = System.getProperty("os.name").toLowerCase();
 		    File keyStoreFile;
-		    if(os.contains("win")) { //local
-		    	 keyStoreFile = new ClassPathResource("keystore/"+keyStoreName).getFile();
+			if(systemEvn.SERVICE_MODE.contains("main")) { //local1
+				keyStoreFile = new File("/webapp/keystore/"+systemEvn.KEYSTORE_FILENAME);
 		    }else{
-		    	 keyStoreFile = new File("/webapp/keystore/"+keyStoreName);
+		    	keyStoreFile = new ClassPathResource("keystore/"+systemEvn.KEYSTORE_FILENAME).getFile();
 		    }
 			credentials = WalletUtils.loadCredentials(password, keyStoreFile);
 

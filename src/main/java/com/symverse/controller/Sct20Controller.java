@@ -88,7 +88,7 @@ public class Sct20Controller {
 	
 	
 	// sct 20 토큰 전송  - method 1
-	@RequestMapping(value="/sct20ToeknSend", method=RequestMethod.GET, consumes = { "application/json" }, produces = "application/json" )
+	@RequestMapping(value="/sct20TokenSend", method=RequestMethod.GET, consumes = { "application/json" }, produces = "application/json" )
 	@ResponseBody
 	public Object method1( @RequestParam String contractAddress , @RequestParam String toSymId , @RequestParam String sendAmount  ) throws Exception {
 		String transactionResultHashValue = sct20Factory.sct20ToeknSend(systemEvn.KEYSTORE_FILENAME, contractAddress, toSymId, sendAmount );
