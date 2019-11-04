@@ -23,17 +23,17 @@ public class GetKeyStoreJson {
 	
 	@Autowired SystemEnvFactory systemEvn;  // System.getProperty를 가져옵니다.
 	
-	public String getKeyStoreValue(String Key) throws Exception {
+	public String getKeyStoreValue(String keystoreFileName , String Key) throws Exception {
 		JSONParser parser = new JSONParser();
 		ObjectMapper objectMapper = new ObjectMapper();
 		log.debug("[ca_log]load credential");
 		
-		System.out.println("[ Loading KeyStore File : "+systemEvn.KEYSTORE_FILENAME +"]");
+		System.out.println("[ Loading KeyStore File : "+keystoreFileName +"]");
 	    File keyStoreFile;
 		if(systemEvn.SERVICE_MODE.contains("main")) { //local
-			keyStoreFile = new File("/webapp/keystore/"+systemEvn.KEYSTORE_FILENAME);
+			keyStoreFile = new ClassPathResource("keystore/"+keystoreFileName).getFile();
 	    }else{
-	    	keyStoreFile = new ClassPathResource("keystore/"+systemEvn.KEYSTORE_FILENAME).getFile();
+	    	keyStoreFile = new File("/webapp/keystore/"+keystoreFileName);
 	    }
 		
 		// File file = new ClassPathResource(systemEvn.KEYSTORE_FILENAME).getFile();

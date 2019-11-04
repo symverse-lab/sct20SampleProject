@@ -29,7 +29,7 @@ public class SystemEnvFactory {
 		this.KEYSTORE_PASSWORD = Optional.ofNullable(System.getProperty("KEYSTORE_PASSWORD")).orElse("INSERT_PASSWORD").toLowerCase();
 		this.KEYSTORE_FILENAME = Optional.ofNullable(System.getProperty("KEYSTORE_FILENAME")).orElse("keystore.json").toLowerCase();
 		this.CHAIN_ID = Optional.ofNullable(System.getProperty("CHAIN_ID")).orElse("1").toLowerCase();
-		this.NODE_URL = Optional.ofNullable(System.getProperty("NODE_URL")).orElse("http://1.234.16.207:8545").toLowerCase();
+		this.NODE_URL = Optional.ofNullable(System.getProperty("NODE_URL")).orElse("http://58.227.193.175:8545").toLowerCase();
 		this.ENGINE_VERSION = Optional.ofNullable(System.getProperty("ENGINE_VERSION")).orElse("1.0.14").toLowerCase();
 		
 		log.debug("");

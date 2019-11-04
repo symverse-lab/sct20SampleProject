@@ -59,7 +59,7 @@ public class Sct20Factory {
 	
 	public String sendRawTransaction(String keyStoreFileName,String toAddress,String amount) throws Exception{
 		List<String> setSymAPIConnectionParam  = new ArrayList<String>();
-		String keyStroeAddress = KeyStoreJson.getKeyStoreValue("address");
+		String keyStroeAddress = KeyStoreJson.getKeyStoreValue(keyStoreFileName,"address");
 		Credentials credential = keyStoreManagement.getCredentials(keyStoreFileName , systemEnvFactory.KEYSTORE_PASSWORD );
 		setSymAPIConnectionParam.add(keyStroeAddress);
 		setSymAPIConnectionParam.add("pending");
@@ -82,7 +82,7 @@ public class Sct20Factory {
 		sct20SendRawTransaction.setInput(inputParam);
 		sct20SendRawTransaction.setType("0");
 		List<String> workNodesValue = new ArrayList<>();
-		workNodesValue.add("0002b103ddaae9780002"); // mainnet worknode - 2  0x0002b103ddaae9780002		1.234.16.207	8545
+		workNodesValue.add("0002db0859e72aad0002"); // mainnet worknode - 2  0x0002b103ddaae9780002		1.234.16.207	8545
 		sct20SendRawTransaction.setWorkNode(workNodesValue);
 		String getCouponTransactionHash = sct20SendRawTransactionService.sct20SendRawTransaction(sct20SendRawTransaction , credential);
 		return getCouponTransactionHash;
@@ -93,7 +93,7 @@ public class Sct20Factory {
 	public String sct20TokenCreate(String keyStoreFileName , String coinName , String coinSimpleName , String coinTotalSupply  ) throws Exception  {
 		
 		 List<String> setSymAPIConnectionParam  = new ArrayList<String>();
-		 String keyStroeAddress = KeyStoreJson.getKeyStoreValue( "address");
+		 String keyStroeAddress = KeyStoreJson.getKeyStoreValue( keyStoreFileName,"address");
 		Credentials credential = keyStoreManagement.getCredentials(keyStoreFileName , systemEnvFactory.KEYSTORE_PASSWORD );
 		 setSymAPIConnectionParam.add(keyStroeAddress);
 		 setSymAPIConnectionParam.add("pending");
@@ -130,7 +130,7 @@ public class Sct20Factory {
 	// sct 20  토큰 교환 ( 토큰 전송 )
 	public String sct20ToeknSend(String keyStoreFileName, String contractAddress , String toSymId , String sendTokenAmt) throws Exception {
 		List<String> setSymAPIConnectionParam  = new ArrayList<String>();
-		String keyStroeAddress = KeyStoreJson.getKeyStoreValue( "address");
+		String keyStroeAddress = KeyStoreJson.getKeyStoreValue( keyStoreFileName,"address");
 		Credentials credential = keyStoreManagement.getCredentials(keyStoreFileName , systemEnvFactory.KEYSTORE_PASSWORD );
 		setSymAPIConnectionParam.add(keyStroeAddress);
 		setSymAPIConnectionParam.add("pending");
@@ -163,7 +163,7 @@ public class Sct20Factory {
 	// 제 3자 토큰 교환(송금) - ( 스펜더 계정에서 특정 SymId에게 송금하기 )  
 	public String sct20SpenderSendToken(String keyStoreFileName , String contractAddress , String toSymId , String sendTokenAmt) throws Exception {
 		 List<String> setSymAPIConnectionParam  = new ArrayList<String>();
-		 String keyStroeAddress = KeyStoreJson.getKeyStoreValue(  "address");
+		 String keyStroeAddress = KeyStoreJson.getKeyStoreValue( keyStoreFileName ,  "address");
 		 Credentials credential = keyStoreManagement.getCredentials(keyStoreFileName , systemEnvFactory.KEYSTORE_PASSWORD );
 		 setSymAPIConnectionParam.add(keyStroeAddress);
 		 setSymAPIConnectionParam.add("pending");
@@ -199,7 +199,7 @@ public class Sct20Factory {
 	// 제 3자 토큰 승인 ( 스펜더 설정 )  - 제 3자 토큰 승인을 해야  제 3자 토큰 교환을 할 수 있습니다. 
 	public String sct20SpenderAssign(String keyStoreFileName , String contractAddress ,String spenderSymid  , String sendTokenAmt) throws Exception {
 		List<String> setSymAPIConnectionParam  = new ArrayList<String>();
-		String keyStroeAddress = KeyStoreJson.getKeyStoreValue(  "address");
+		String keyStroeAddress = KeyStoreJson.getKeyStoreValue( keyStoreFileName , "address");
 		Credentials credential = keyStoreManagement.getCredentials(keyStoreFileName , systemEnvFactory.KEYSTORE_PASSWORD);
 		setSymAPIConnectionParam.add(keyStroeAddress);
 		setSymAPIConnectionParam.add("pending");
@@ -237,7 +237,7 @@ public class Sct20Factory {
 	// sct 20 토큰 추가 발행 ( 토큰 총량 증가하기 )
 	public String sct20TokenTotalSupplyAdd(String keyStoreFileName , String contractAddress,String addTotalTokenSupplyAmt) throws Exception {
 		List<String> setSymAPIConnectionParam  = new ArrayList<String>();
-		String keyStroeAddress = KeyStoreJson.getKeyStoreValue( "address");
+		String keyStroeAddress = KeyStoreJson.getKeyStoreValue( keyStoreFileName,"address");
 		Credentials credential = keyStoreManagement.getCredentials(keyStoreFileName , systemEnvFactory.KEYSTORE_PASSWORD );
 		setSymAPIConnectionParam.add(keyStroeAddress);
 		setSymAPIConnectionParam.add("pending");
@@ -272,7 +272,7 @@ public class Sct20Factory {
 	// sct 20 토큰 태움 - ( 토큰 총량 감소하기 )
 	public String sct20TokenTotalSupplyBurn(String keyStoreFileName,String contractAddress ,String bornTotalTokenSupplyAmt) throws Exception {
 		List<String> setSymAPIConnectionParam  = new ArrayList<String>();
-		String keyStroeAddress = KeyStoreJson.getKeyStoreValue(  "address");
+		String keyStroeAddress = KeyStoreJson.getKeyStoreValue( keyStoreFileName , "address");
 		Credentials credential = keyStoreManagement.getCredentials(keyStoreFileName , systemEnvFactory.KEYSTORE_PASSWORD );
 		setSymAPIConnectionParam.add(keyStroeAddress);
 		setSymAPIConnectionParam.add("pending");
@@ -305,7 +305,7 @@ public class Sct20Factory {
 	// sct 20 토큰 거래 일시 정지  
 	public String sct20TokenTradingPause(String keyStoreFileName,String contractAddress) throws Exception {
 	    List<String> setSymAPIConnectionParam  = new ArrayList<String>();
-		String keyStroeAddress = KeyStoreJson.getKeyStoreValue( "address");
+		String keyStroeAddress = KeyStoreJson.getKeyStoreValue( keyStoreFileName,"address");
 		Credentials credential = keyStoreManagement.getCredentials(keyStoreFileName , systemEnvFactory.KEYSTORE_PASSWORD );
 		setSymAPIConnectionParam.add(keyStroeAddress);
 		setSymAPIConnectionParam.add("pending");
@@ -335,7 +335,7 @@ public class Sct20Factory {
 	// sct 20 토큰 거래 일시 정지  해제
 	public String sct20TokenTradingPauseRelease(String keyStoreFileName, String contractAddress) throws Exception {
 	    List<String> setSymAPIConnectionParam  = new ArrayList<String>();
-		String keyStroeAddress = KeyStoreJson.getKeyStoreValue( "address");
+		String keyStroeAddress = KeyStoreJson.getKeyStoreValue( keyStoreFileName,"address");
 		Credentials credential = keyStoreManagement.getCredentials(keyStoreFileName , systemEnvFactory.KEYSTORE_PASSWORD);
 		setSymAPIConnectionParam.add(keyStroeAddress);
 		setSymAPIConnectionParam.add("pending");

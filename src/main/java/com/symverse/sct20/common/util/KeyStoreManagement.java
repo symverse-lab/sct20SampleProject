@@ -30,9 +30,9 @@ public class KeyStoreManagement {
 			log.debug("[ca_log] credential keystorename : "+keyStoreName+" credential password : "+password);
 		    File keyStoreFile;
 			if(systemEvn.SERVICE_MODE.contains("main")) { //local1
-				keyStoreFile = new File("/webapp/keystore/"+systemEvn.KEYSTORE_FILENAME);
+				keyStoreFile = new ClassPathResource("keystore/"+keyStoreName).getFile();
 		    }else{
-		    	keyStoreFile = new ClassPathResource("keystore/"+systemEvn.KEYSTORE_FILENAME).getFile();
+		    	keyStoreFile = new File("/webapp/keystore/"+keyStoreName);
 		    }
 			credentials = WalletUtils.loadCredentials(password, keyStoreFile);
 
