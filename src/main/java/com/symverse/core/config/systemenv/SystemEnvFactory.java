@@ -25,7 +25,7 @@ public class SystemEnvFactory {
 	
 	@PostConstruct
 	public void systemEnvInitParameter() {
-		this.SERVICE_MODE = Optional.ofNullable(System.getProperty("SERVICE_MODE")).orElse("mainnet").toLowerCase();
+		this.SERVICE_MODE = Optional.ofNullable(System.getProperty("SERVICE_MODE")).orElse("docker").toLowerCase();
 		this.KEYSTORE_PASSWORD = Optional.ofNullable(System.getProperty("KEYSTORE_PASSWORD")).orElse("INSERT_PASSWORD").toLowerCase();
 		this.KEYSTORE_FILENAME = Optional.ofNullable(System.getProperty("KEYSTORE_FILENAME")).orElse("keystore.json").toLowerCase();
 		this.CHAIN_ID = Optional.ofNullable(System.getProperty("CHAIN_ID")).orElse("1").toLowerCase();

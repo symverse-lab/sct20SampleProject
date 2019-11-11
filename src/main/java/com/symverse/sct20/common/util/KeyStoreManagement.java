@@ -29,10 +29,10 @@ public class KeyStoreManagement {
 			log.debug("[ca_log]load credential");
 			log.debug("[ca_log] credential keystorename : "+keyStoreName+" credential password : "+password);
 		    File keyStoreFile;
-			if(systemEvn.SERVICE_MODE.contains("main")) { //local1
-				keyStoreFile = new ClassPathResource("keystore/"+keyStoreName).getFile();
+			if(systemEvn.SERVICE_MODE.contains("docker")) { //local1
+				keyStoreFile = new File("/webapp/keystore/"+keyStoreName);
 		    }else{
-		    	keyStoreFile = new File("/webapp/keystore/"+keyStoreName);
+		    	keyStoreFile = new ClassPathResource("keystore/"+keyStoreName).getFile();
 		    }
 			credentials = WalletUtils.loadCredentials(password, keyStoreFile);
 

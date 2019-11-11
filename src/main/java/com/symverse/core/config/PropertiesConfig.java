@@ -30,6 +30,7 @@ public class PropertiesConfig implements EnvironmentPostProcessor{
 	@Override	
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		logger.debug("SERVICE_MODE: " + SERVICE_MODE);
+		
 		Resource path = new ClassPathResource("properties/application-" +  SERVICE_MODE + ".properties");
 
 		List<PropertySource<?>> propertySource = loadProps(path);

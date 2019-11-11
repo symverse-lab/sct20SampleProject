@@ -1,21 +1,15 @@
 package com.symverse.sct20.transaction.service;
 
-import java.io.File;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.web3j.crypto.Credentials;
-import org.web3j.utils.Numeric;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.symverse.core.config.systemenv.SystemEnvFactory;
 import com.symverse.sct20.common.util.GetKeyStoreJson;
 import com.symverse.sct20.common.util.KeyStoreManagement;
@@ -24,7 +18,6 @@ import com.symverse.sct20.transaction.domain.Sct20SendRawTransaction;
 import com.symverse.sct20.transaction.domain.Sct20TempleteVO;
 
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.parser.JSONParser;
 
 
 @Slf4j
@@ -248,7 +241,7 @@ public class Sct20Factory {
 		sct20SendRawTransaction.setNonce(new BigInteger(nonceValue));
 		sct20SendRawTransaction.setGasPrice(new BigInteger("18000000000")); // 값 고정
 		sct20SendRawTransaction.setGasLimit(new BigInteger("2000000")); // 값 고정
-		sct20SendRawTransaction.setTo("0xf89448d8a643f0a26a34"); 
+		sct20SendRawTransaction.setTo(contractAddress); 
 		sct20SendRawTransaction.setValue(new BigInteger("0"));
 		Sct20TempleteVO inputParam = new Sct20TempleteVO();
 		inputParam.setSctType("20"); // 20 , 30 , 40
@@ -316,7 +309,7 @@ public class Sct20Factory {
 		sct20SendRawTransaction.setNonce(new BigInteger(nonceValue));
 		sct20SendRawTransaction.setGasPrice(new BigInteger("18000000000")); // 값 고정
 		sct20SendRawTransaction.setGasLimit(new BigInteger("2000000")); // 값 고정
-		sct20SendRawTransaction.setTo("0xf89448d8a643f0a26a34"); 
+		sct20SendRawTransaction.setTo(contractAddress); 
 		sct20SendRawTransaction.setValue(new BigInteger("0"));
 		Sct20TempleteVO inputParam = new Sct20TempleteVO();
 		inputParam.setSctType("20"); // 20 , 30 , 40
@@ -346,7 +339,7 @@ public class Sct20Factory {
 		sct20SendRawTransaction.setNonce(new BigInteger(nonceValue));
 		sct20SendRawTransaction.setGasPrice(new BigInteger("18000000000")); // 값 고정
 		sct20SendRawTransaction.setGasLimit(new BigInteger("2000000")); // 값 고정
-		sct20SendRawTransaction.setTo("0xf89448d8a643f0a26a34"); 
+		sct20SendRawTransaction.setTo(contractAddress); 
 		sct20SendRawTransaction.setValue(new BigInteger("0"));
 		Sct20TempleteVO inputParam = new Sct20TempleteVO();
 		inputParam.setSctType("20"); // 20 , 30 , 40

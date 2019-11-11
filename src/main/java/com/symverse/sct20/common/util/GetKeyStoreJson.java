@@ -28,12 +28,14 @@ public class GetKeyStoreJson {
 		ObjectMapper objectMapper = new ObjectMapper();
 		log.debug("[ca_log]load credential");
 		
+		
 		System.out.println("[ Loading KeyStore File : "+keystoreFileName +"]");
+		
 	    File keyStoreFile;
-		if(systemEvn.SERVICE_MODE.contains("main")) { //local
-			keyStoreFile = new ClassPathResource("keystore/"+keystoreFileName).getFile();
+		if(systemEvn.SERVICE_MODE.contains("docker")) { //local
+			keyStoreFile = new File("/webapp/keystore/"+keystoreFileName);
 	    }else{
-	    	keyStoreFile = new File("/webapp/keystore/"+keystoreFileName);
+	    	keyStoreFile = new ClassPathResource("keystore/"+keystoreFileName).getFile();
 	    }
 		
 		// File file = new ClassPathResource(systemEvn.KEYSTORE_FILENAME).getFile();
