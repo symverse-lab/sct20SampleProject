@@ -23,9 +23,20 @@ apply plugin: 'io.spring.dependency-management'
 apply plugin: 'war'
 apply plugin: 'docker'
 
+//bootjar 파일 생성시 
 bootJar {
     baseName = 'sct20sample-spring-boot-docker'
     version =  '1.0.14'
+    sourceSets{
+        main{
+            java{
+                exclude "**/scheduletask/**"
+            }
+        }
+    }
+    exclude("**/gd-king.json")
+    exclude("**/jaehyun-keystore.json")
+    exclude("**/kkh-leader.json")
 }
 
 
